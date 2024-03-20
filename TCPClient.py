@@ -8,9 +8,9 @@ def block_selector(msg):
 def encrypt_message(msg, key):
     half = len(msg)//2
     left, right = msg[:half], msg[half:]
-    print(right)
-    new_right = "".join([right[int(k) - 1] for k in str(key)])
+    new_right = "".join([right[int(k) - 1] for k in str(key)]) ^ left
     print(new_right)
+    
 
 serverName = '127.0.0.1'
 serverPort = 12000
