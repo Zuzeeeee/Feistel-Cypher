@@ -13,9 +13,11 @@ def encrypt_message(msg, key):
         print(msg)
     return msg
 
+#da maneira q tá ela faz o xor e desfaz no passo seguinte kkkk
+#eita
+
 
 def shuffle(right, key):
-    #fazer aqui
     return
 
 def xor(left,right):
