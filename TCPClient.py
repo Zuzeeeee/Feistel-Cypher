@@ -9,43 +9,44 @@ def encrypt_message(msg, key):
     half = len(msg)//2
     for i in range(4):
         left, right = msg[:half], msg[half:]
-        msg = xor(left,right)
-        print(msg)
+        msg = xor(left, right, key)
+
+    left, right = msg[:half], msg[half:]
+    msg = right + left
     return msg
 
-#da maneira q tá ela faz o xor e desfaz no passo seguinte kkkk
-#eita
-
-
 def shuffle(right, key):
-    return
+    shuffled = list()
+    for i in str(key):
+        shuffled.append(right[int(i)-1]) 
+    return shuffled
 
-def xor(left,right):
-    right = list(right)
-    print(right)
-    right = list(map(ord, right))
-    left = list(left)
-    left = list(map(ord, left))
+def xor(left, right, key):
+    shuffled = shuffle(right, key)
+    newleft = list(map(ord, list(right)))
+    right = list(map(ord, list(shuffled)))
+    left  = list(map(ord, list(left)))
+
     for i in range(0,len(left)):
         right[i] = right[i] ^ left[i]
-    msg = right + left
+
+    msg = newleft + right
     msg = "".join(list(map(chr, msg)))
     return msg
     
-    
-
 serverName = '127.0.0.1'
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_STREAM)
+key = 2314
 
 #Conecta ao servidor
 clientSocket.connect((serverName,serverPort))
 
 #Recebe mensagem do usuario e envia ao servidor
 message = input('Digite uma frase: ')
-clientSocket.send(message.encode('ascii'))
 
-encrypt_message(block_selector(message)[0],2314)
+encrypted = encrypt_message(block_selector(message)[0], key)
+clientSocket.send(encrypted.encode('ascii'))
 
 #Aguarda mensagem de retorno e a imprime
 modifiedMessage, addr = clientSocket.recvfrom(2048)
