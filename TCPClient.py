@@ -33,6 +33,14 @@ def xor(left, right, key):
     msg = newleft + right
     msg = "".join(list(map(chr, msg)))
     return msg
+
+def mapper(blocos):
+    lista = []
+    for i in blocos:
+        lista.append(encrypt_message(i, key).encode('ascii'))
+    msg = b''.join(lista)
+    return msg
+
     
 serverName = '127.0.0.1'
 serverPort = 12000
@@ -45,8 +53,12 @@ clientSocket.connect((serverName,serverPort))
 #Recebe mensagem do usuario e envia ao servidor
 message = input('Digite uma frase: ')
 
+lista = block_selector(message)
+
+msg = mapper(lista)
+
 encrypted = encrypt_message(block_selector(message)[0], key)
-clientSocket.send(encrypted.encode('ascii'))
+clientSocket.send(msg)
 
 #Aguarda mensagem de retorno e a imprime
 modifiedMessage, addr = clientSocket.recvfrom(2048)
