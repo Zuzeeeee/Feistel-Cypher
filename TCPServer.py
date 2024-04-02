@@ -7,6 +7,10 @@ serverSocket.bind(('',serverPort))
 #Socket fica ouvindo conexoes. O valor 1 indica que uma conexao pode ficar na fila
 serverSocket.listen(1)
 
+def block_selector(msg):
+    blocks = [msg[i:i+8] for i in range(0,len(msg), 8)]
+    return blocks
+
 def xor(left, right, key):
 
     shuffled = shuffle(right, key)
@@ -37,16 +41,24 @@ def decrypt_message(msg, key):
     msg = right + left
     return msg
 
+def mapper(blocos, key):
+    msg = ""
+    for i in blocos:
+      msg += decrypt_message(i, key)
+    
+    return msg
+
 print("Servidor pronto para receber mensagens. Digite Ctrl+C para terminar.")
 
 key = 2314
 
 while 1:
        #Cria um socket para tratar a conexao do cliente
-     connectionSocket, addr = serverSocket.accept()
-     sentence = connectionSocket.recv(1024)
-     print("{}".format(sentence.decode()))
-     capitalizedSentence = sentence.upper()
-     s = decrypt_message(capitalizedSentence.decode(), key)
-     connectionSocket.send(s.encode('ascii'))
-     connectionSocket.close()
+    connectionSocket, addr = serverSocket.accept()
+    sentence = connectionSocket.recv(1024)
+    print("{}".format(sentence.decode()))
+    capitalizedSentence = sentence
+    blocos = block_selector(capitalizedSentence.decode('ascii'))
+    s = mapper(blocos, key)
+    connectionSocket.send(s.encode('ascii').upper())
+    connectionSocket.close()
